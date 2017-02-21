@@ -19,12 +19,11 @@ class Task:
         # self.queue = sqs.get_queue_by_name(QueueName=self.id)
 
     def listen(self):
-        # Process messages by printing out body and optional author name
         messages = self.sqs.receive_message(QueueUrl=self.queue["QueueUrl"], WaitTimeSeconds=20, MaxNumberOfMessages=10)
         for message in messages.get('Messages'):
             body = message["Body"]
+            self.sqs.delete_message(QueueUrl=self.queue["QueueUrl"], ReceiptHandle=message["ReceiptHandle"])
             self.run(body)
-            # self.sqs.delete_message(QueueUrl=self.queue["QueueUrl"], ReceiptHandle=message["ReceiptHandle"])
 
     def run(self, body):
         body = json.loads(body)
