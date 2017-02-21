@@ -13,11 +13,14 @@ class Task:
         # self.queue = sqs.get_queue_by_name(QueueName=self.id)
 
     def listen(self):
-        messages = self.sqs.receive_message(QueueUrl=self.queue["QueueUrl"], WaitTimeSeconds=20, MaxNumberOfMessages=10)
-        for message in messages.get('Messages'):
-            body = message["Body"]
-            self.sqs.delete_message(QueueUrl=self.queue["QueueUrl"], ReceiptHandle=message["ReceiptHandle"])
-            self.run(body)
+        while True:
+            messages = self.sqs.receive_message(QueueUrl=self.queue["QueueUrl"], WaitTimeSeconds=20, MaxNumberOfMessages=10)
+            messages = messages.get('Messages')
+            if messages:
+                for message in messages:
+                    body = message["Body"]
+                    self.sqs.delete_message(QueueUrl=self.queue["QueueUrl"], ReceiptHandle=message["ReceiptHandle"])
+                    self.run(body)
 
     def run(self, body):
         body = json.loads(body)
