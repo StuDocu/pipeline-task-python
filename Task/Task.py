@@ -1,11 +1,5 @@
-import boto3
 import json
 from os import environ
-from os.path import join, dirname
-from dotenv import load_dotenv
-
-dotenv_path = join(dirname(__file__), '../.env')
-load_dotenv(dotenv_path)
 
 class Task:
     def __init__(self, sqs, task_id, handle):
@@ -45,16 +39,3 @@ class Task:
             }),
             DelaySeconds=0
         )
-
-sqs = boto3.client(
-    'sqs',
-    aws_access_key_id=environ.get('AWS_ACCESS_KEY_ID'),
-    aws_secret_access_key=environ.get('AWS_SECRET_ACCESS_KEY'),
-    region_name=environ.get('SQS_AWS_REGION')
-)
-
-def bla(ponies):
-    return "yeaaaah boyyyyyyyyyyyyyyyy"
-
-t = Task(sqs, 'task_poniardos', bla)
-t.listen()
